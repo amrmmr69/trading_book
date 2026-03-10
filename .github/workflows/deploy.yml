@@ -1,0 +1,8 @@
+name: CI/CD Prod
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
