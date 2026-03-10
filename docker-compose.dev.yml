@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      target: dev
+    command: npm run dev
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "${HOST_PORT:-3000}:3000"

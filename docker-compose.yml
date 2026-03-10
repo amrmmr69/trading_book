@@ -1,0 +1,13 @@
+services:
+  app:
+    container_name: trading-book
+    build:
+      context: .
+      target: runner
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-3012}:3000"

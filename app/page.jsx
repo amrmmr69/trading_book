@@ -1,5 +1,9 @@
 import Image from "next/image";
-import { highlights, siteContent, upcomingArticles } from "@/content/site-content";
+import {
+  highlights,
+  siteContent,
+  upcomingArticles,
+} from "@/content/site-content";
 
 function CandleIcon({ className = "" }) {
   return (
@@ -10,11 +14,32 @@ function CandleIcon({ className = "" }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <line x1="12" y1="8" x2="12" y2="40" stroke="currentColor" strokeWidth="2.6" />
+      <line
+        x1="12"
+        y1="8"
+        x2="12"
+        y2="40"
+        stroke="currentColor"
+        strokeWidth="2.6"
+      />
       <rect x="8" y="15" width="8" height="14" rx="2" fill="#4CC96E" />
-      <line x1="24" y1="6" x2="24" y2="42" stroke="currentColor" strokeWidth="2.6" />
+      <line
+        x1="24"
+        y1="6"
+        x2="24"
+        y2="42"
+        stroke="currentColor"
+        strokeWidth="2.6"
+      />
       <rect x="20" y="18" width="8" height="16" rx="2" fill="#FF4D6D" />
-      <line x1="36" y1="9" x2="36" y2="39" stroke="currentColor" strokeWidth="2.6" />
+      <line
+        x1="36"
+        y1="9"
+        x2="36"
+        y2="39"
+        stroke="currentColor"
+        strokeWidth="2.6"
+      />
       <rect x="32" y="12" width="8" height="14" rx="2" fill="#4CC96E" />
     </svg>
   );
@@ -56,11 +81,47 @@ function GridIcon({ className = "" }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <rect x="7" y="9" width="34" height="30" rx="6" stroke="currentColor" strokeWidth="3" />
-      <line x1="18" y1="9" x2="18" y2="39" stroke="currentColor" strokeWidth="3" />
-      <line x1="30" y1="9" x2="30" y2="39" stroke="currentColor" strokeWidth="3" />
-      <line x1="7" y1="20" x2="41" y2="20" stroke="currentColor" strokeWidth="3" />
-      <line x1="7" y1="29" x2="41" y2="29" stroke="currentColor" strokeWidth="3" />
+      <rect
+        x="7"
+        y="9"
+        width="34"
+        height="30"
+        rx="6"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <line
+        x1="18"
+        y1="9"
+        x2="18"
+        y2="39"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <line
+        x1="30"
+        y1="9"
+        x2="30"
+        y2="39"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <line
+        x1="7"
+        y1="20"
+        x2="41"
+        y2="20"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <line
+        x1="7"
+        y1="29"
+        x2="41"
+        y2="29"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
     </svg>
   );
 }
@@ -97,7 +158,11 @@ export default function HomePage() {
           </ul>
 
           <div className="cta">
-            <a className="button buttonPrimary" href={siteContent.downloadFile} download>
+            <a
+              className="button buttonPrimary"
+              href={siteContent.downloadFile}
+              download
+            >
               <CandleIcon className="buttonIcon" />
               <span>{siteContent.buttons.download}</span>
             </a>
@@ -141,12 +206,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section card reveal" style={{ animationDelay: "0.18s" }}>
+      <section
+        className="section card reveal"
+        style={{ animationDelay: "0.18s" }}
+      >
         <h2>О материале</h2>
         <p>
-          «Простой Трейдинг» создан как прикладной инструмент для ежедневной работы с графиком.
-          Печатные паттерны помогают быстро сверять сценарии входа и поддерживать дисциплину при
-          принятии торговых решений.
+          «Простой Трейдинг» создан как прикладной инструмент для ежедневной
+          работы с графиком. Печатные паттерны помогают быстро сверять сценарии
+          входа и поддерживать дисциплину при принятии торговых решений.
         </p>
       </section>
 
@@ -168,7 +236,9 @@ export default function HomePage() {
       <section className="section reveal" style={{ animationDelay: "0.38s" }}>
         <div className="sectionHead">
           <h2>Темы для новых публикаций</h2>
-          <span>Канал развивает материалы книги через регулярные рыночные разборы</span>
+          <span>
+            Канал развивает материалы книги через регулярные рыночные разборы
+          </span>
         </div>
         <div className="grid">
           {upcomingArticles.map((article) => (

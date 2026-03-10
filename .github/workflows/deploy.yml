@@ -1,8 +1,57 @@
-name: CI/CD Prod
+name: Deploy Production
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          PROD_HOST="${{ secrets.SSH_PROD_HOST }}"
+          PROD_HOST="${PROD_HOST#*@}"
+          ssh-keyscan -H "$PROD_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy on server
+        shell: bash
+        env:
+          SSH_PROD_HOST: ${{ secrets.SSH_PROD_HOST }}
+          APP_DIR: ${{ vars.SSH_PROD_APP_DIR }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ssh "$SSH_PROD_HOST" "APP_DIR='$APP_DIR' REPOSITORY='$REPOSITORY' bash -s" <<'EOF_REMOTE'
+          set -euo pipefail
+
+          APP_DIR="${APP_DIR:-$HOME/trading_book}"
+          REPOSITORY_URL="https://github.com/${REPOSITORY}.git"
+
+          if [ ! -d "$APP_DIR/.git" ]; then
+            git clone "$REPOSITORY_URL" "$APP_DIR"
+          fi
+
+          cd "$APP_DIR"
+          git fetch origin main
+          git checkout main
+          git pull --ff-only origin main
+
+          cp .env.prod .env
+
+          docker compose up -d --build --remove-orphans
+          docker image prune -f
+          EOF_REMOTE
