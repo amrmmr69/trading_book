@@ -40,7 +40,12 @@ jobs:
           printf '%s\n' "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          PROD_HOST="${SSH_PROD_HOST#*@}"
+          SSH_TARGET="${SSH_PROD_HOST}"
+          if [[ "${SSH_TARGET}" != *"@"* ]]; then
+            SSH_TARGET="root@${SSH_TARGET}"
+          fi
+
+          PROD_HOST="${SSH_TARGET#*@}"
           ssh-keyscan -H "$PROD_HOST" >> ~/.ssh/known_hosts
 
       - name: Deploy on server
@@ -51,10 +56,15 @@ jobs:
           REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$SSH_PROD_HOST" "APP_DIR='$APP_DIR' REPOSITORY='$REPOSITORY' bash -s" <<'EOF_REMOTE'
+          SSH_TARGET="${SSH_PROD_HOST}"
+          if [[ "${SSH_TARGET}" != *"@"* ]]; then
+            SSH_TARGET="root@${SSH_TARGET}"
+          fi
+
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$SSH_TARGET" "APP_DIR='$APP_DIR' REPOSITORY='$REPOSITORY' bash -s" <<'EOF_REMOTE'
           set -euo pipefail
 
-          APP_DIR="${APP_DIR:-$HOME/trading_book}"
+          APP_DIR="${APP_DIR:-/opt/trading_book}"
           REPOSITORY_URL="https://github.com/${REPOSITORY}.git"
 
           if [ ! -d "$APP_DIR/.git" ]; then
