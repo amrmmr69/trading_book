@@ -17,14 +17,30 @@ jobs:
     steps:
       - name: Configure SSH
         shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PROD_HOST: ${{ secrets.SSH_PROD_HOST }}
         run: |
           set -euo pipefail
-          mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
 
-          PROD_HOST="${{ secrets.SSH_PROD_HOST }}"
-          PROD_HOST="${PROD_HOST#*@}"
+          if [ -z "${SSH_PRIVATE_KEY}" ]; then
+            echo "SSH_PRIVATE_KEY secret is empty"
+            exit 1
+          fi
+
+          if [ -z "${SSH_PROD_HOST}" ]; then
+            echo "SSH_PROD_HOST secret is empty"
+            exit 1
+          fi
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          # Remove possible CRLF from copied key and use explicit identity file.
+          printf '%s\n' "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          PROD_HOST="${SSH_PROD_HOST#*@}"
           ssh-keyscan -H "$PROD_HOST" >> ~/.ssh/known_hosts
 
       - name: Deploy on server
@@ -35,7 +51,7 @@ jobs:
           REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-          ssh "$SSH_PROD_HOST" "APP_DIR='$APP_DIR' REPOSITORY='$REPOSITORY' bash -s" <<'EOF_REMOTE'
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$SSH_PROD_HOST" "APP_DIR='$APP_DIR' REPOSITORY='$REPOSITORY' bash -s" <<'EOF_REMOTE'
           set -euo pipefail
 
           APP_DIR="${APP_DIR:-$HOME/trading_book}"
